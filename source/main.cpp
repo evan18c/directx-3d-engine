@@ -20,7 +20,7 @@ int main() {
     Texture *texture = renderer->createTexture("assets/textures/terrain.bmp");
     Shader *shader = renderer->createShader("assets/shaders/vs.hlsl", "assets/shaders/ps.hlsl");
 
-    // Models
+    // Models asdf
     Model *model = renderer->createModel(mesh, texture, shader);
 
     // Main Game Loop

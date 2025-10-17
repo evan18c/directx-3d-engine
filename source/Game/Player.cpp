@@ -49,9 +49,9 @@ void Player::update() {
     for (Model *model : *Window::s_renderer->m_modelList) {
         if (!getAABB().Intersects(model->getAABB())) continue;
         for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
-            Vec3 v0 = model->m_mesh->m_triangles.at(i);
-            Vec3 v1 = model->m_mesh->m_triangles.at(i+1);
-            Vec3 v2 = model->m_mesh->m_triangles.at(i+2);
+            Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
+            Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
+            Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
             if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
                 m_position.x -= m_velocity.x;
                 break;
@@ -64,9 +64,9 @@ void Player::update() {
     for (Model *model : *Window::s_renderer->m_modelList) {
         if (!getAABB().Intersects(model->getAABB())) continue;
         for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
-            Vec3 v0 = model->m_mesh->m_triangles.at(i);
-            Vec3 v1 = model->m_mesh->m_triangles.at(i+1);
-            Vec3 v2 = model->m_mesh->m_triangles.at(i+2);
+            Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
+            Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
+            Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
             if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
                 m_position.y -= m_velocity.y;
                 if (m_velocity.y < 0.0f) {
@@ -83,9 +83,9 @@ void Player::update() {
     for (Model *model : *Window::s_renderer->m_modelList) {
         if (!getAABB().Intersects(model->getAABB())) continue;
         for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
-            Vec3 v0 = model->m_mesh->m_triangles.at(i);
-            Vec3 v1 = model->m_mesh->m_triangles.at(i+1);
-            Vec3 v2 = model->m_mesh->m_triangles.at(i+2);
+            Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
+            Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
+            Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
             if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
                 m_position.z -= m_velocity.z;
                 break;

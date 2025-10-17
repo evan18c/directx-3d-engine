@@ -16,10 +16,10 @@ class Model {
         Vec3 m_rotation;
         Vec3 m_scale;
         AABB getAABB();
+        Mat4 transform();
 
     private:
         Model(ID3D11Device *device, Mesh *mesh, Texture *texture, Shader *shader);
-        Mat4 transform();
 
     friend class Renderer;
 };

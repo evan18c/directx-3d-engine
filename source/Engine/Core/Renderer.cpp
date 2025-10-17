@@ -1,4 +1,8 @@
 #include "Engine/Core/Renderer.h"
+#include "Engine/Core/Window.h"
+#include "imgui.h"
+#include "backends/imgui_impl_win32.h"
+#include "backends/imgui_impl_dx11.h"
 
 // Initializes Direct3D
 Renderer::Renderer(HWND hwnd, const int width, const int height) {
@@ -72,7 +76,7 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
 
     // -------------------- 11. Create Camera -------------------- //
     m_camera = new Camera();
-
+    
 }
 
 // Called Every Window Update
@@ -115,6 +119,22 @@ void Renderer::update() {
         m_context->Draw(m_modelList->at(i)->m_mesh->m_vertexCount, 0);
     }
     m_modelList->clear();
+
+    // ImGui Pre
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    // ImGui
+    ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(300, 150), ImGuiCond_Once);
+    ImGui::Begin("Debug");
+    ImGui::Text("FPS: %f", 1.0f / Window::s_delta);
+    ImGui::End();
+
+    // ImGui Post
+    ImGui::Render();
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     // Present
     m_swapChain->Present(0, 0);

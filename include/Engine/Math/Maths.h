@@ -239,3 +239,12 @@ inline bool AABBvsTriangle(const AABB& box, const Vec3& v0, const Vec3& v1, cons
     // No separating axis found → intersection
     return true;
 }
+
+// Applies Mat4 transformation to Vec3
+inline Vec3 TransformPoint(const Vec3& v, const Mat4& m) {
+    Vec3 result;
+    result.x = v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + m.m[3][0];
+    result.y = v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + m.m[3][1];
+    result.z = v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + m.m[3][2];
+    return result;
+}

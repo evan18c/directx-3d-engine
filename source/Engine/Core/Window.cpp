@@ -1,9 +1,13 @@
 #include "Engine/Core/Window.h"
 #include "Engine/Core/Renderer.h"
+#include "imgui.h"
+#include "backends/imgui_impl_win32.h"
+#include "backends/imgui_impl_dx11.h"
 
 // Static Initialization
 Renderer *Window::s_renderer;
 bool Window::s_keys[256] = {};
+bool Window::s_mouse = false;
 double Window::s_delta = 0;
 int Window::s_mdx = 0;
 int Window::s_mdy = 0;
@@ -48,11 +52,18 @@ Window::Window(const int width, const int height, const char *title) {
     // Init Renderer
     s_renderer = new Renderer(m_hwnd, width, height);
 
+    // ImGui Initialization
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplWin32_Init(m_hwnd);
+    ImGui_ImplDX11_Init(s_renderer->m_device, s_renderer->m_context);
+
     // Init Cursor
     POINT center = {m_width/2, m_height/2};
     ClientToScreen(m_hwnd, &center);
     SetCursorPos(center.x, center.y);
-    ShowCursor(FALSE);
 
 }
 
@@ -79,15 +90,20 @@ BOOL Window::update() {
     if (s_delta > 0.1) s_delta = 0.1; // clamp
     m_last = current;
 
-    // Updating Mouse Deltas
-    POINT mouse;
-    GetCursorPos(&mouse);
-    ScreenToClient(m_hwnd, &mouse);
-    s_mdx = mouse.x - m_width / 2;
-    s_mdy = mouse.y - m_height / 2;
-    POINT center = {m_width/2, m_height/2};
-    ClientToScreen(m_hwnd, &center);
-    SetCursorPos(center.x, center.y);
+    // Updating Mouse
+    if (s_mouse) {
+        POINT mouse;
+        GetCursorPos(&mouse);
+        ScreenToClient(m_hwnd, &mouse);
+        s_mdx = mouse.x - m_width / 2;
+        s_mdy = mouse.y - m_height / 2;
+        POINT center = {m_width/2, m_height/2};
+        ClientToScreen(m_hwnd, &center);
+        SetCursorPos(center.x, center.y);
+    } else {
+        s_mdx = 0;
+        s_mdy = 0;
+    }
 
     // DirectX Rendering
     s_renderer->update();
