@@ -48,6 +48,7 @@ class Renderer {
         ID3D11RenderTargetView *m_renderTargetView;
         ID3D11DepthStencilView *m_depthStencilView;
         ID3D11DepthStencilState *m_depthStencilState;
+        ID3D11BlendState *m_blendState;
         ID3D11Buffer *m_transformBuffer3D;
         ID3D11Buffer *m_transformBuffer2D;
 

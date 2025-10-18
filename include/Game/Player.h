@@ -14,10 +14,8 @@ class Player {
         float m_speed;
         bool m_grounded;
         Camera *m_camera;
-
+        AABB getAABB();
         void update();
 
-    private:
-        AABB getAABB();
 
 };

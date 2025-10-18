@@ -4,7 +4,7 @@
 Sprite::Sprite(ID3D11Device *device, Texture *texture, Shader *shader) {
 
     // ---------- Construction ---------- //
-    m_position = { 640.0f, 360.0f };
+    m_position = { (float)Window::s_width / 2.0f, (float)Window::s_height / 2.0f };
     m_size = { 100.0f, 100.0f };
     m_texture = texture;
     m_shader = shader;

@@ -116,14 +116,10 @@ inline Mat4 Scale(Vec3 factor) {
 }
 
 inline Mat4 Translate(Vec3 vec) {
-    Mat4 result = {};
-    result.m[0][0] = 1.0f;
-    result.m[1][1] = 1.0f;
-    result.m[2][2] = 1.0f;
-    result.m[3][3] = 1.0f;
-    result.m[0][3] = vec.x;
-    result.m[1][3] = vec.y;
-    result.m[2][3] = vec.z;
+    Mat4 result = Identity();
+    result.m[3][0] = vec.x;
+    result.m[3][1] = vec.y;
+    result.m[3][2] = vec.z;
     return result;
 }
 

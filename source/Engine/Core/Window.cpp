@@ -88,6 +88,7 @@ BOOL Window::update() {
     // Update Delta
     double current = Clock::GetTimeSeconds();
     s_delta = current - m_last;
+    if (s_delta > 0.1f) s_delta = 0.1f; // clamp
     m_last = current;
 
     // Updating Mouse

@@ -10,6 +10,7 @@
 #include "Engine/Graphics/Mesh.h"
 #include "Engine/Graphics/Model.h"
 #include "Engine/Graphics/Shader.h"
+#include "Engine/Graphics/Sprite.h"
 #include "Engine/Graphics/Texture.h"
 
 // Math

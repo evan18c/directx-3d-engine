@@ -13,6 +13,7 @@ include_directories(
     include
     include/Engine/External/imgui
     include/Engine/External/imgui/backends
+    include/Demo
 )
 
 # Source files (recursively)
@@ -23,6 +24,7 @@ file(GLOB_RECURSE SOURCES
     "source/Engine/Utils/*.cpp"
     "source/Engine/External/imgui/*.cpp"
     "source/Game/*.cpp"
+    "source/Demo/*.cpp"
 )
 
 # Create the executable

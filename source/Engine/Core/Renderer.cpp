@@ -63,6 +63,19 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
     m_device->CreateDepthStencilState(&dsDesc, &m_depthStencilState);
     m_context->OMSetDepthStencilState(m_depthStencilState, 0);
 
+    // -------------------- 5. Create Blend State -------------------- //
+    D3D11_BLEND_DESC blendDesc = {};
+    blendDesc.RenderTarget[0].BlendEnable = TRUE;
+    blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    m_device->CreateBlendState(&blendDesc, &m_blendState);
+    m_context->OMSetBlendState(m_blendState, NULL, 0xffffffff);
+
     // -------------------- 6. Create Transform Buffer 3D -------------------- //
     D3D11_BUFFER_DESC transformBufferDesc = {};
     transformBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -71,7 +84,7 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
     transformBufferDesc.CPUAccessFlags = 0;
     m_device->CreateBuffer(&transformBufferDesc, NULL, &m_transformBuffer3D);
 
-    // -------------------- 6. Create Transform Buffer 2D -------------------- //
+    // -------------------- 7. Create Transform Buffer 2D -------------------- //
     D3D11_BUFFER_DESC transformBufferDesc2 = {};
     transformBufferDesc2.Usage = D3D11_USAGE_DEFAULT;
     transformBufferDesc2.ByteWidth = sizeof(TransformBuffer2D);
@@ -79,11 +92,11 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
     transformBufferDesc2.CPUAccessFlags = 0;
     m_device->CreateBuffer(&transformBufferDesc2, NULL, &m_transformBuffer2D);
 
-    // -------------------- 10. Create Model & Sprite List -------------------- //
+    // -------------------- 8. Create Model & Sprite List -------------------- //
     m_modelList = new std::vector<Model *>();
     m_spriteList = new std::vector<Sprite *>();
 
-    // -------------------- 11. Create Camera -------------------- //
+    // -------------------- 9. Create Camera -------------------- //
     m_camera = new Camera();
     
 }
