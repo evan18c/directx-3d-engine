@@ -35,5 +35,3 @@ int main() {
     return 0;
 
 }
-
-// TODO: finish adding collision, aabb vs triangle in Player class against world meshes.
