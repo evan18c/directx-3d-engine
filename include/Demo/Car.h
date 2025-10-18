@@ -9,6 +9,7 @@ class Car {
         void update();
         Vec3 m_position;
         Vec3 m_rotation;
+        float m_speed;
 
     private:
         Renderer *m_renderer;

@@ -27,6 +27,7 @@ int main() {
         ImGui::SetNextWindowSize(ImVec2(300, 150), ImGuiCond_Once);
         ImGui::Begin("Debug");
         ImGui::Text("FPS: %.0f", 1.0f / Window::s_delta);
+        ImGui::Text("Pitch: %f", camera->m_pitch);
         ImGui::End();
     };
 
