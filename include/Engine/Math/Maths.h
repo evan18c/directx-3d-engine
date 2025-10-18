@@ -248,3 +248,25 @@ inline Vec3 TransformPoint(const Vec3& v, const Mat4& m) {
     result.z = v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + m.m[3][2];
     return result;
 }
+
+// Creates a transform matrix for 2D sprites (position + scale in NDC)
+inline Mat4 MakeSpriteTransform(float x, float y, float sx, float sy, float screenW, float screenH)
+{
+    // Convert pixel coords to NDC (−1 to +1)
+    float tx = (x / screenW) * 2.0f - 1.0f;
+    float ty = 1.0f - (y / screenH) * 2.0f; // flip Y
+    float sxNDC = (sx / screenW) * 2.0f;
+    float syNDC = (sy / screenH) * 2.0f;
+
+    Mat4 scale = Identity();
+    scale.m[0][0] = sxNDC;
+    scale.m[1][1] = syNDC;
+    scale.m[2][2] = 1.0f;
+
+    Mat4 translate = Identity();
+    translate.m[3][0] = tx;
+    translate.m[3][1] = ty;
+    translate.m[3][2] = 0.0f;
+
+    return Multiply(scale, translate);
+}

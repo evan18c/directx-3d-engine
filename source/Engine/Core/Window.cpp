@@ -5,9 +5,10 @@
 #include "backends/imgui_impl_dx11.h"
 
 // Static Initialization
+int Window::s_width, Window::s_height;
 Renderer *Window::s_renderer;
 bool Window::s_keys[256] = {};
-bool Window::s_mouse = false;
+bool Window::s_cursor = false;
 double Window::s_delta = 0;
 int Window::s_mdx = 0;
 int Window::s_mdy = 0;
@@ -32,8 +33,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 Window::Window(const int width, const int height, const char *title) {
 
     // Init
-    m_width = width;
-    m_height = height;
+    s_width = width;
+    s_height = height;
     m_last = Clock::GetTimeSeconds();
     m_fpsCap = 180.0;
 
@@ -61,7 +62,7 @@ Window::Window(const int width, const int height, const char *title) {
     ImGui_ImplDX11_Init(s_renderer->m_device, s_renderer->m_context);
 
     // Init Cursor
-    POINT center = {m_width/2, m_height/2};
+    POINT center = {s_width/2, s_height/2};
     ClientToScreen(m_hwnd, &center);
     SetCursorPos(center.x, center.y);
 
@@ -87,20 +88,21 @@ BOOL Window::update() {
     // Update Delta
     double current = Clock::GetTimeSeconds();
     s_delta = current - m_last;
-    if (s_delta > 0.1) s_delta = 0.1; // clamp
     m_last = current;
 
     // Updating Mouse
-    if (s_mouse) {
+    if (!s_cursor) {
+        hideCursor();
         POINT mouse;
         GetCursorPos(&mouse);
         ScreenToClient(m_hwnd, &mouse);
-        s_mdx = mouse.x - m_width / 2;
-        s_mdy = mouse.y - m_height / 2;
-        POINT center = {m_width/2, m_height/2};
+        s_mdx = mouse.x - s_width / 2;
+        s_mdy = mouse.y - s_height / 2;
+        POINT center = {s_width/2, s_height/2};
         ClientToScreen(m_hwnd, &center);
         SetCursorPos(center.x, center.y);
     } else {
+        showCursor();
         s_mdx = 0;
         s_mdy = 0;
     }
@@ -116,4 +118,20 @@ BOOL Window::update() {
     // Return TRUE to continue
     return TRUE;
 
+}
+
+void Window::showCursor() {
+    if (!shownCursor) {
+        ShowCursor(TRUE);
+        shownCursor = true;
+        hiddenCursor = false;
+    }
+}
+
+void Window::hideCursor() {
+    if (!hiddenCursor) {
+        ShowCursor(FALSE);
+        hiddenCursor = true;
+        shownCursor = false;
+    }
 }

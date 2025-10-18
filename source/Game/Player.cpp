@@ -7,9 +7,9 @@
 Player::Player(Camera *camera) {
     m_position = { 0.0f, 0.0f, 0.0f };
     m_velocity = { 0.0f, 0.0f, 0.0f };
-    m_gravity = 0.25f;
+    m_gravity = 0.5f;
     m_speed = 5.0f;
-    m_jump = 10.0f;
+    m_jump = 0.25f;
     m_grounded = false;
     m_camera = camera;
     m_camera->m_keyboardControls = false;
@@ -38,7 +38,7 @@ void Player::update() {
     // Calculating Vertical Movement
     if (Window::s_keys[' '] && m_grounded) {
         m_grounded = false;
-        m_velocity.y = m_jump * Window::s_delta;
+        m_velocity.y = m_jump;
     }
 
     // Calculating Gravity

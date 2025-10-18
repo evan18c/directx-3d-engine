@@ -1,7 +1,8 @@
-#include <stdio.h>
-
 // Engine
 #include "Engine/Engine.h"
+
+// ImGui
+#include "imgui.h"
 
 int main() {
 
@@ -16,17 +17,31 @@ int main() {
     player->m_position.x = 5.0f;
 
     // Assets
-    Mesh *mesh = renderer->createMesh("assets/meshes/terrain.obj");
-    Texture *texture = renderer->createTexture("assets/textures/terrain.bmp");
-    Shader *shader = renderer->createShader("assets/shaders/vs.hlsl", "assets/shaders/ps.hlsl");
+    Mesh *mesh = renderer->createMesh("../assets/meshes/exam.obj");
+    Texture *texture = renderer->createTexture("../assets/textures/checker.bmp");
+    Shader *shader3D = renderer->createShader("../assets/shaders/3dvs.hlsl", "../assets/shaders/3dps.hlsl", Layout::MODEL);
+    Shader *shader2D = renderer->createShader("../assets/shaders/2dvs.hlsl", "../assets/shaders/2dps.hlsl", Layout::SPRITE);
 
-    // Models asdf
-    Model *model = renderer->createModel(mesh, texture, shader);
+    // Models
+    Model *model = renderer->createModel(mesh, texture, shader3D);
+
+    // Sprites
+    Sprite *sprite = renderer->createSprite(texture, shader2D);
+
+    // Render Callback
+    renderer->m_renderCallback = [&]() {
+        ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(300, 150), ImGuiCond_Once);
+        ImGui::Begin("Debug");
+        ImGui::Text("FPS: %.0f", 1.0f / Window::s_delta);
+        ImGui::End();
+    };
 
     // Main Game Loop
     while (window.update()) {
 
         renderer->renderModel(model);
+        renderer->renderSprite(sprite);
 
         player->update();
 
