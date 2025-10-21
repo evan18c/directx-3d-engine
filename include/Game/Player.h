@@ -1,12 +1,15 @@
 #pragma once
+#include "Engine/Core/Object.h"
 #include "Engine/Math/Maths.h"
 #include "Engine/Graphics/Camera.h"
 
-// Player class, contains all player information for an fps game
-class Player {
-
+// Player class
+class Player : public Object {
     public:
         Player(Camera *camera);
+        void update(float dt) override;
+        AABB getAABB();
+
         Vec3 m_position;
         Vec3 m_velocity;
         float m_gravity;
@@ -14,8 +17,5 @@ class Player {
         float m_speed;
         bool m_grounded;
         Camera *m_camera;
-        AABB getAABB();
-        void update();
-
 
 };

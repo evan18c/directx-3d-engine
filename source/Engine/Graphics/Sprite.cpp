@@ -1,10 +1,9 @@
-#include "Engine/Graphics/Sprite.h"
-#include "Engine/Core/Window.h"
+#include "Engine/Engine.h"
 
 Sprite::Sprite(ID3D11Device *device, Texture *texture, Shader *shader) {
 
     // ---------- Construction ---------- //
-    m_position = { (float)Window::s_width / 2.0f, (float)Window::s_height / 2.0f };
+    m_position = { (float)Engine::window->m_width / 2.0f, (float)Engine::window->m_height / 2.0f };
     m_size = { 100.0f, 100.0f };
     m_texture = texture;
     m_shader = shader;
@@ -33,5 +32,5 @@ Sprite::Sprite(ID3D11Device *device, Texture *texture, Shader *shader) {
 
 // Returns Transformation Matrix
 Mat4 Sprite::transform() {
-    return MakeSpriteTransform(m_position.x, m_position.y, m_size.x, m_size.y, Window::s_width, Window::s_height);
+    return MakeSpriteTransform(m_position.x, m_position.y, m_size.x, m_size.y, Engine::window->m_width, Engine::window->m_height);
 }

@@ -1,5 +1,4 @@
-#include "Engine/Core/Renderer.h"
-#include "Engine/Core/Window.h"
+#include "Engine/Engine.h"
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
 #include "backends/imgui_impl_dx11.h"
@@ -63,7 +62,7 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
     m_device->CreateDepthStencilState(&dsDesc, &m_depthStencilState);
     m_context->OMSetDepthStencilState(m_depthStencilState, 0);
 
-    // -------------------- 5. Create Blend State -------------------- //
+    // -------------------- 6. Create Blend State -------------------- //
     D3D11_BLEND_DESC blendDesc = {};
     blendDesc.RenderTarget[0].BlendEnable = TRUE;
     blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
@@ -76,7 +75,7 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
     m_device->CreateBlendState(&blendDesc, &m_blendState);
     m_context->OMSetBlendState(m_blendState, NULL, 0xffffffff);
 
-    // -------------------- 6. Create Transform Buffer 3D -------------------- //
+    // -------------------- 7. Create Transform Buffer 3D -------------------- //
     D3D11_BUFFER_DESC transformBufferDesc = {};
     transformBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     transformBufferDesc.ByteWidth = sizeof(TransformBuffer3D);
@@ -84,124 +83,56 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
     transformBufferDesc.CPUAccessFlags = 0;
     m_device->CreateBuffer(&transformBufferDesc, NULL, &m_transformBuffer3D);
 
-    // -------------------- 7. Create Transform Buffer 2D -------------------- //
+    // -------------------- 8. Create Transform Buffer 2D -------------------- //
     D3D11_BUFFER_DESC transformBufferDesc2 = {};
     transformBufferDesc2.Usage = D3D11_USAGE_DEFAULT;
     transformBufferDesc2.ByteWidth = sizeof(TransformBuffer2D);
     transformBufferDesc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     transformBufferDesc2.CPUAccessFlags = 0;
     m_device->CreateBuffer(&transformBufferDesc2, NULL, &m_transformBuffer2D);
-
-    // -------------------- 8. Create Model & Sprite List -------------------- //
-    m_modelList = new std::vector<Model *>();
-    m_spriteList = new std::vector<Sprite *>();
-
-    // -------------------- 9. Create Camera -------------------- //
-    m_camera = new Camera();
     
+    // -------------------- 9. Create Sampler State -------------------- //
+    D3D11_SAMPLER_DESC sampDesc = {};
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    m_device->CreateSamplerState(&sampDesc, &m_samplerState);
+
+
+    // -------------------- 10. ImGui Init -------------------- //
+    ImGui_ImplDX11_Init(m_device, m_context);
+
 }
 
-// Called Every Window Update
-void Renderer::update() {
+// Called at the start of every frame.
+void Renderer::beginFrame() {
 
     // Clear Window
     float clearColor[4] = { 0.0f, 0.25f, 0.5f, 1.0f };
     m_context->ClearRenderTargetView(m_renderTargetView, clearColor);
     m_context->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    // Update Camera
-    m_camera->update();
-
-    // Render Models
-    UINT stride = sizeof(Vertex);
-    UINT offset = 0;
-    m_context->OMSetDepthStencilState(m_depthStencilState, 0);
-    m_context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    for (int i=0; i<m_modelList->size(); i++) {
-
-        // Set Model Shaders
-        m_context->IASetInputLayout(m_modelList->at(i)->m_shader->m_il);
-        m_context->VSSetShader(m_modelList->at(i)->m_shader->m_vs, NULL, 0);
-        m_context->PSSetShader(m_modelList->at(i)->m_shader->m_ps, NULL, 0);
-
-        // Uploading Vertices + Textures + Lightning
-        m_context->IASetVertexBuffers(0, 1, &m_modelList->at(i)->m_mesh->m_buffer, &stride, &offset);
-        m_context->PSSetShaderResources(0, 1, &m_modelList->at(i)->m_texture->m_srv);
-
-        // Uploading MVP Matrix
-        TransformBuffer3D t;
-        t.model = m_modelList->at(i)->transform();
-        t.view = LookAt(m_camera->m_position, m_camera->m_look, {0.0f, 1.0f, 0.0f});
-        t.projection = Projection(70.0f, 1280.0f / 720.0f, 0.1f, 100.0f);
-        m_context->UpdateSubresource(m_transformBuffer3D, 0, NULL, &t, 0, 0);
-        m_context->VSSetConstantBuffers(0, 1, &m_transformBuffer3D);
-
-        // Drawing The Model
-        m_context->Draw(m_modelList->at(i)->m_mesh->m_vertexCount, 0);
-    }
-    m_modelList->clear();
-
-    // Render Sprites
-    UINT stride2 = sizeof(Vertex2D);
-    UINT offset2 = 0;
-    m_context->OMSetDepthStencilState(NULL, 0);
-    m_context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    for (int i=0; i<m_spriteList->size(); i++) {
-
-        // Set Sprite Shaders
-        m_context->IASetInputLayout(m_spriteList->at(i)->m_shader->m_il);
-        m_context->VSSetShader(m_spriteList->at(i)->m_shader->m_vs, NULL, 0);
-        m_context->PSSetShader(m_spriteList->at(i)->m_shader->m_ps, NULL, 0);
-
-        // Uploading Data
-        m_context->IASetVertexBuffers(0, 1, &m_spriteList->at(i)->m_buffer, &stride2, &offset2);
-        m_context->PSSetShaderResources(0, 1, &m_spriteList->at(i)->m_texture->m_srv);
-
-        // Uploading Transformation Matrix
-        TransformBuffer2D t;
-        t.transform = m_spriteList->at(i)->transform();
-        m_context->UpdateSubresource(m_transformBuffer2D, 0, NULL, &t, 0, 0);
-        m_context->VSSetConstantBuffers(0, 1, &m_transformBuffer2D);
-
-        // Draw The 2 Triangles
-        m_context->Draw(4, 0);
-    }
-    m_spriteList->clear();
-
     // ImGui Pre
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    // ImGui
-    if (m_renderCallback) m_renderCallback();
+}
+
+// Called at the end of every frame.
+void Renderer::endFrame() {
 
     // ImGui Post
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
     // Present
-    m_swapChain->Present(0, 0);
-}
+    m_swapChain->Present(1, 0);
 
-// Factory Method For Creating Mesh
-Mesh *Renderer::createMesh(const char *objFile) {
-    return new Mesh(m_device, objFile);
-}
-
-// Factory Method For Creating Texture
-Texture *Renderer::createTexture(const char *bmpFile) {
-    return new Texture(m_device, bmpFile);
-}
-
-// Factory Method For Creating Shader
-Shader *Renderer::createShader(const char *vsPath, const char *psPath, Layout layout) {
-    return new Shader(m_device, vsPath, psPath, layout);
-}
-
-// Factory Method For Creating Model
-Model *Renderer::createModel(Mesh *mesh, Texture *texture, Shader *shader) {
-    return new Model(m_device, mesh, texture, shader);
 }
 
 // Factory Method For Creating Sprite
@@ -211,10 +142,63 @@ Sprite *Renderer::createSprite(Texture *texture, Shader *shader) {
 
 // Renders Model Next Frame
 void Renderer::renderModel(Model *model) {
-    m_modelList->push_back(model);
+
+    // Constants
+    const UINT stride = sizeof(Vertex);
+    const UINT offset = 0;
+
+    // Init
+    m_context->OMSetDepthStencilState(m_depthStencilState, 0);
+    m_context->PSSetSamplers(0, 1, &m_samplerState);
+    m_context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // Set Model Shaders
+    m_context->IASetInputLayout(model->m_shader->m_il);
+    m_context->VSSetShader(model->m_shader->m_vs, NULL, 0);
+    m_context->PSSetShader(model->m_shader->m_ps, NULL, 0);
+
+    // Uploading Vertices + Textures + Lightning
+    m_context->IASetVertexBuffers(0, 1, &model->m_mesh->m_buffer, &stride, &offset);
+    m_context->PSSetShaderResources(0, 1, &model->m_texture->m_srv);
+
+    // Uploading MVP Matrix
+    TransformBuffer3D t;
+    t.model = model->transform();
+    t.view = LookAt(Engine::camera->m_position, Engine::camera->m_look, {0.0f, 1.0f, 0.0f});
+    t.projection = Projection(70.0f, 1280.0f / 720.0f, 0.1f, 100.0f);
+    m_context->UpdateSubresource(m_transformBuffer3D, 0, NULL, &t, 0, 0);
+    m_context->VSSetConstantBuffers(0, 1, &m_transformBuffer3D);
+
+    // Drawing The Model
+    m_context->Draw(model->m_mesh->m_vertexCount, 0);
 }
 
 // Renders Sprite Next Frame
 void Renderer::renderSprite(Sprite *sprite) {
-    m_spriteList->push_back(sprite);
+
+    // Constants
+    const UINT stride2 = sizeof(Vertex2D);
+    const UINT offset2 = 0;
+
+    // Init
+    m_context->OMSetDepthStencilState(NULL, 0);
+    m_context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+    // Set Sprite Shaders
+    m_context->IASetInputLayout(sprite->m_shader->m_il);
+    m_context->VSSetShader(sprite->m_shader->m_vs, NULL, 0);
+    m_context->PSSetShader(sprite->m_shader->m_ps, NULL, 0);
+
+    // Uploading Data
+    m_context->IASetVertexBuffers(0, 1, &sprite->m_buffer, &stride2, &offset2);
+    m_context->PSSetShaderResources(0, 1, &sprite->m_texture->m_srv);
+
+    // Uploading Transformation Matrix
+    TransformBuffer2D t;
+    t.transform = sprite->transform();
+    m_context->UpdateSubresource(m_transformBuffer2D, 0, NULL, &t, 0, 0);
+    m_context->VSSetConstantBuffers(0, 1, &m_transformBuffer2D);
+
+    // Draw The 2 Triangles
+    m_context->Draw(4, 0);
 }

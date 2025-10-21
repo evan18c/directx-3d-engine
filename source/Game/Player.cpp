@@ -1,22 +1,24 @@
 #include "Game/Player.h"
 #include "Engine/Core/Window.h"
-#include "Engine/Graphics/Model.h"
 #include "Engine/Core/Renderer.h"
+#include "Engine/Core/Scene.h"
+#include "Engine/Graphics/Model.h"
 #include <stdio.h>
 
 Player::Player(Camera *camera) {
     m_position = { 0.0f, 0.0f, 0.0f };
     m_velocity = { 0.0f, 0.0f, 0.0f };
-    m_gravity = 0.5f;
+    m_gravity = 9.8f;
     m_speed = 5.0f;
-    m_jump = 0.25f;
+    m_jump = 5.0f;
     m_grounded = false;
     m_camera = camera;
     m_camera->m_keyboardControls = false;
+    m_type = ObjectType::PLAYER;
 }
 
 // Called Every Frame, Handles Movement + Collision
-void Player::update() {
+void Player::update(float dt) {
 
     // Calculating Look Directions
     Vec3 forward = Normalize({m_camera->m_look.x - m_camera->m_position.x, 0.0f, m_camera->m_look.z - m_camera->m_position.z});
@@ -30,10 +32,10 @@ void Player::update() {
     m_velocity.z = 0.0f;
 
     // Calculating Horizontal Movement
-    if (Window::s_keys['W']) m_velocity = Add(m_velocity, Mul(forward, m_speed * Window::s_delta));
-    if (Window::s_keys['S']) m_velocity = Sub(m_velocity, Mul(forward, m_speed * Window::s_delta));
-    if (Window::s_keys['D']) m_velocity = Add(m_velocity, Mul(right, m_speed * Window::s_delta));
-    if (Window::s_keys['A']) m_velocity = Sub(m_velocity, Mul(right, m_speed * Window::s_delta));
+    if (Window::s_keys['W']) m_velocity = Add(m_velocity, Mul(forward, m_speed));
+    if (Window::s_keys['S']) m_velocity = Sub(m_velocity, Mul(forward, m_speed));
+    if (Window::s_keys['D']) m_velocity = Add(m_velocity, Mul(right,   m_speed));
+    if (Window::s_keys['A']) m_velocity = Sub(m_velocity, Mul(right,   m_speed));
 
     // Calculating Vertical Movement
     if (Window::s_keys[' '] && m_grounded) {
@@ -42,33 +44,37 @@ void Player::update() {
     }
 
     // Calculating Gravity
-    m_velocity.y -= m_gravity * Window::s_delta;
+    m_velocity.y -= m_gravity * dt;
 
     // Applying X Velocity
-    m_position.x += m_velocity.x;
-    for (Model *model : *Window::s_renderer->m_modelList) {
+    m_position.x += m_velocity.x * dt;
+    for (Object *object : m_scene->m_objects) {
+        if (object->m_type != ObjectType::MODEL) continue;
+        Model *model = static_cast<Model*>(object);
         if (!getAABB().Intersects(model->getAABB())) continue;
         for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
             Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
             Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
             Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
             if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
-                m_position.x -= m_velocity.x;
+                m_position.y += abs(m_velocity.x * dt);
                 break;
             }
         }
     }
 
     // Applying Y Velocity
-    m_position.y += m_velocity.y;
-    for (Model *model : *Window::s_renderer->m_modelList) {
+    m_position.y += m_velocity.y * dt;
+    for (Object *object : m_scene->m_objects) {
+        if (object->m_type != ObjectType::MODEL) continue;
+        Model *model = static_cast<Model*>(object);
         if (!getAABB().Intersects(model->getAABB())) continue;
         for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
             Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
             Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
             Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
             if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
-                m_position.y -= m_velocity.y;
+                m_position.y -= m_velocity.y * dt;
                 if (m_velocity.y < 0.0f) {
                     m_velocity.y = 0.0f;
                     m_grounded = true;
@@ -79,15 +85,17 @@ void Player::update() {
     }
 
     // Applying Z Velocity
-    m_position.z += m_velocity.z;
-    for (Model *model : *Window::s_renderer->m_modelList) {
+    m_position.z += m_velocity.z * dt;
+    for (Object *object : m_scene->m_objects) {
+        if (object->m_type != ObjectType::MODEL) continue;
+        Model *model = static_cast<Model*>(object);
         if (!getAABB().Intersects(model->getAABB())) continue;
         for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
             Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
             Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
             Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
             if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
-                m_position.z -= m_velocity.z;
+                m_position.y += abs(m_velocity.z * dt);
                 break;
             }
         }
@@ -102,7 +110,7 @@ void Player::update() {
 AABB Player::getAABB() {
     float halfSize = 0.5f;
     return {
-        {m_position.x - halfSize, m_position.y - halfSize * 4, m_position.z - halfSize},
-        {m_position.x + halfSize, m_position.y, m_position.z + halfSize}
+        {m_position.x - halfSize, m_position.y - halfSize * 3, m_position.z - halfSize},
+        {m_position.x + halfSize, m_position.y + halfSize,     m_position.z + halfSize}
     };
 }

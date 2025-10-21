@@ -1,5 +1,4 @@
-#include "Engine/Graphics/Shader.h"
-#include "Engine/Utils/Files.h"
+#include "Engine/Engine.h"
 #include <d3dcompiler.h>
 
 Shader::Shader(ID3D11Device *device, const char *vsPath, const char *psPath, Layout layout) {
@@ -12,7 +11,7 @@ Shader::Shader(ID3D11Device *device, const char *vsPath, const char *psPath, Lay
 
     // Create Vertex Shader's Input Layout
     switch (layout) {
-        case MODEL: {
+        case Layout::MODEL: {
             D3D11_INPUT_ELEMENT_DESC layout2[] = {
                 { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
                 { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -21,7 +20,7 @@ Shader::Shader(ID3D11Device *device, const char *vsPath, const char *psPath, Lay
             device->CreateInputLayout(layout2, ARRAYSIZE(layout2), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_il);
             break;
         }
-        case SPRITE: {
+        case Layout::SPRITE: {
             D3D11_INPUT_ELEMENT_DESC layout2[] = {
                 { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
                 { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -39,4 +38,8 @@ Shader::Shader(ID3D11Device *device, const char *vsPath, const char *psPath, Lay
     device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &m_ps);
     psBlob->Release();
 
+}
+
+Shader *Shader::create(const char *vsPath, const char *psPath, Layout layout) {
+    return new Shader(Engine::renderer->m_device, vsPath, psPath, layout);
 }

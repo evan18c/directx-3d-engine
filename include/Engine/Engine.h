@@ -2,7 +2,9 @@
 #pragma once
 
 // Core
+#include "Engine/Core/Object.h"
 #include "Engine/Core/Renderer.h"
+#include "Engine/Core/Scene.h"
 #include "Engine/Core/Window.h"
 
 // Graphics
@@ -22,3 +24,14 @@
 
 // Game
 #include "Game/Player.h"
+
+// Static Engine Class
+class Engine {
+    public:
+        static void create();
+        static void run(Scene *scene);
+        static Window *window;
+        static Renderer *renderer;
+        static Camera *camera;
+        static Scene *activeScene;
+};

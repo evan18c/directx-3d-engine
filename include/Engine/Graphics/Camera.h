@@ -4,6 +4,8 @@
 class Camera {
 
     public:
+        Camera();
+        void update();
         Vec3 m_position;
         Vec3 m_look;
         float m_yaw, m_pitch;
@@ -11,11 +13,5 @@ class Camera {
         float m_sensitivity;
         bool m_mouseControls;
         bool m_keyboardControls;
-
-    private:
-        Camera();
-        void update();
-
-    friend class Renderer;
 
 };

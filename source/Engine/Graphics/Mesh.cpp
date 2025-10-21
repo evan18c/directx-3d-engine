@@ -1,7 +1,6 @@
-#include "Engine/Graphics/Mesh.h"
+#include "Engine/Engine.h"
 #include <vector>
 #include <stdio.h>
-#include <float.h>
 #include <string.h>
 
 Mesh::Mesh(ID3D11Device *device, const char *objPath) {
@@ -73,21 +72,6 @@ Mesh::Mesh(ID3D11Device *device, const char *objPath) {
     }
 
 
-    // Calculate AABB
-    Vec3 minV = {FLT_MAX, FLT_MAX, FLT_MAX};
-    Vec3 maxV = {FLT_MIN, FLT_MIN, FLT_MIN};
-    for (int i=0; i<m_vertexCount; i++) {
-        if (vertices2[i].pos.x < minV.x) minV.x = vertices2[i].pos.x;
-        if (vertices2[i].pos.y < minV.y) minV.y = vertices2[i].pos.y;
-        if (vertices2[i].pos.z < minV.z) minV.z = vertices2[i].pos.z;
-        if (vertices2[i].pos.x > maxV.x) maxV.x = vertices2[i].pos.x;
-        if (vertices2[i].pos.y > maxV.y) maxV.y = vertices2[i].pos.y;
-        if (vertices2[i].pos.z > maxV.z) maxV.z = vertices2[i].pos.z;
-    }
-    m_aabb.min = minV;
-    m_aabb.max = maxV;
-
-
     // Buffer Description
     D3D11_BUFFER_DESC desc = {};
     desc.Usage = D3D11_USAGE_DEFAULT;
@@ -99,4 +83,8 @@ Mesh::Mesh(ID3D11Device *device, const char *objPath) {
     data.pSysMem = vertices2;
     device->CreateBuffer(&desc, &data, &m_buffer);
 
+}
+
+Mesh *Mesh::create(const char *objPath) {
+    return new Mesh(Engine::renderer->m_device, objPath);
 }

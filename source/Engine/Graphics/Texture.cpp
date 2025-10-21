@@ -1,5 +1,4 @@
-#include "Engine/Graphics/Texture.h"
-#include "Engine/Utils/Files.h"
+#include "Engine/Engine.h"
 
 Texture::Texture(ID3D11Device *device, const char *bmpPath) {
 
@@ -32,4 +31,8 @@ Texture::Texture(ID3D11Device *device, const char *bmpPath) {
     // Freeing Memory
     free((void *)raw);
 
+}
+
+Texture *Texture::create(const char *bmpPath) {
+    return new Texture(Engine::renderer->m_device, bmpPath);
 }

@@ -1,14 +1,17 @@
 #pragma once
 #include <d3d11.h>
+#include "Engine/Core/Object.h"
 #include "Engine/Math/Maths.h"
 #include "Engine/Graphics/Mesh.h"
 #include "Engine/Graphics/Texture.h"
 #include "Engine/Graphics/Shader.h"
 
 // Manages Models
-class Model {
+class Model : public Object {
 
     public:
+        static Model *create(Mesh *mesh, Texture *texture, Shader *shader);
+        Model(Mesh *mesh, Texture *texture, Shader *shader);
         Mesh *m_mesh;
         Texture *m_texture;
         Shader *m_shader;
@@ -17,9 +20,5 @@ class Model {
         Vec3 m_scale;
         AABB getAABB();
         Mat4 transform();
-
-    private:
-        Model(ID3D11Device *device, Mesh *mesh, Texture *texture, Shader *shader);
-
-    friend class Renderer;
+        void render(Renderer *renderer) override;
 };

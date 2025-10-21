@@ -14,7 +14,7 @@ struct Vertex {
 class Mesh {
 
     public:
-        AABB m_aabb;
+        static Mesh *create(const char *objPath);
         std::vector<Vec3> m_triangles;
 
     private:

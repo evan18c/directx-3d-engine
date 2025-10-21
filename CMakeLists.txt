@@ -5,7 +5,7 @@ project(Engine)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Suppress warnings like -w
+# Suppress warnings
 add_compile_options(-w)
 
 # Include directories
@@ -13,18 +13,17 @@ include_directories(
     include
     include/Engine/External/imgui
     include/Engine/External/imgui/backends
-    include/Demo
 )
 
 # Source files (recursively)
 file(GLOB_RECURSE SOURCES
     "source/*.cpp"
+    "source/Engine/Engine.cpp"
     "source/Engine/Core/*.cpp"
     "source/Engine/Graphics/*.cpp"
     "source/Engine/Utils/*.cpp"
     "source/Engine/External/imgui/*.cpp"
     "source/Game/*.cpp"
-    "source/Demo/*.cpp"
 )
 
 # Create the executable

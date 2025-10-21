@@ -11,7 +11,7 @@ Camera::Camera() {
     m_yaw = 0.0f;
     m_pitch = 0.0f;
     m_speed = 5.0f;
-    m_sensitivity = 0.2f;
+    m_sensitivity = 0.0025f;
     m_mouseControls = true;
     m_keyboardControls = true;
 }
@@ -21,8 +21,8 @@ void Camera::update() {
 
     // Mouse Movement
     if (m_mouseControls) {
-        m_yaw   += m_sensitivity * Window::s_mdx * Window::s_delta;
-        m_pitch -= m_sensitivity * Window::s_mdy * Window::s_delta;
+        m_yaw   += m_sensitivity * Window::s_mdx;
+        m_pitch -= m_sensitivity * Window::s_mdy;
     }
 
     // Reset Mouse Deltas

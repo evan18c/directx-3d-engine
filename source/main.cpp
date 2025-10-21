@@ -1,0 +1,54 @@
+// Includes
+#include "Engine/Engine.h"
+#include "imgui.h"
+
+// Demo
+class DemoScene : public Scene {
+    public:
+        Player *player;
+        Model *model;
+
+        void onStart() override {
+
+            // Assets
+            Mesh *mesh1 = Mesh::create("../assets/meshes/level.obj");
+            Texture *texture1 = Texture::create("../assets/textures/checker.bmp");
+            Shader *shader1 = Shader::create("../assets/shaders/3dvs.hlsl", "../assets/shaders/3dps.hlsl", Layout::MODEL);
+
+            // Player Object
+            player = new Player(Engine::camera);
+            player->m_position.y = 10.0f;
+
+            // Ground Object
+            model = Model::create(mesh1, texture1, shader1);
+
+            // Adding Objects To Scene
+            this->addObject(player);
+            this->addObject(model);
+        }
+
+        void onUpdate(float dt) override {
+
+            ImGui::Begin("Position");
+            ImGui::Text("X: %.0f", player->m_position.x);
+            ImGui::Text("Y: %.0f", player->m_position.y);
+            ImGui::Text("Z: %.0f", player->m_position.z);
+            ImGui::End();
+
+        }
+};
+
+int main() {
+
+    Engine::create();
+    Engine::run(new DemoScene());
+
+    return 0;
+}
+
+/*
+TODO:
+-for horizontal movement (x/z axis), calculate step up required when they move into a wall.
+-make sprites an object that can be rendered
+-add multi texture support for obj files
+*/

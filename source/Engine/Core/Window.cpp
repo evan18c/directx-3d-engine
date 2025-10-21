@@ -1,12 +1,9 @@
-#include "Engine/Core/Window.h"
-#include "Engine/Core/Renderer.h"
+#include "Engine/Engine.h"
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
 #include "backends/imgui_impl_dx11.h"
 
 // Static Initialization
-int Window::s_width, Window::s_height;
-Renderer *Window::s_renderer;
 bool Window::s_keys[256] = {};
 bool Window::s_cursor = false;
 double Window::s_delta = 0;
@@ -33,10 +30,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 Window::Window(const int width, const int height, const char *title) {
 
     // Init
-    s_width = width;
-    s_height = height;
+    m_width = width;
+    m_height = height;
     m_last = Clock::GetTimeSeconds();
-    m_fpsCap = 180.0;
+    shownCursor = true;
+    hiddenCursor = false;
 
     // Creating Class
     WNDCLASSA wc = {};
@@ -50,19 +48,15 @@ Window::Window(const int width, const int height, const char *title) {
     m_hwnd = CreateWindowExA(0, "DirectX_Engine", title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, GetModuleHandleA(NULL), NULL);
     ShowWindow(m_hwnd, SW_NORMAL);
 
-    // Init Renderer
-    s_renderer = new Renderer(m_hwnd, width, height);
-
     // ImGui Initialization
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
     ImGui_ImplWin32_Init(m_hwnd);
-    ImGui_ImplDX11_Init(s_renderer->m_device, s_renderer->m_context);
 
     // Init Cursor
-    POINT center = {s_width/2, s_height/2};
+    POINT center = {m_width/2, m_height/2};
     ClientToScreen(m_hwnd, &center);
     SetCursorPos(center.x, center.y);
 
@@ -97,9 +91,9 @@ BOOL Window::update() {
         POINT mouse;
         GetCursorPos(&mouse);
         ScreenToClient(m_hwnd, &mouse);
-        s_mdx = mouse.x - s_width / 2;
-        s_mdy = mouse.y - s_height / 2;
-        POINT center = {s_width/2, s_height/2};
+        s_mdx = mouse.x - m_width / 2;
+        s_mdy = mouse.y - m_height / 2;
+        POINT center = {m_width/2, m_height/2};
         ClientToScreen(m_hwnd, &center);
         SetCursorPos(center.x, center.y);
     } else {
@@ -107,14 +101,6 @@ BOOL Window::update() {
         s_mdx = 0;
         s_mdy = 0;
     }
-
-    // DirectX Rendering
-    s_renderer->update();
-
-    // Framerate End
-    double frameTime = Clock::GetTimeMilliseconds() - startTime;
-    double sleepTime = (1000.0 / m_fpsCap) - frameTime;
-    if (sleepTime > 0) Sleep(sleepTime);
 
     // Return TRUE to continue
     return TRUE;

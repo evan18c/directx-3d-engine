@@ -2,7 +2,7 @@
 #include <d3d11.h>
 
 // Layout Of Shader
-enum Layout {
+enum class Layout {
     MODEL,
     SPRITE
 };
@@ -10,6 +10,9 @@ enum Layout {
 // Stores Vertex + Pixel Shader Information
 class Shader {
     
+    public:
+        static Shader *create(const char *vsPath, const char *psPath, Layout layout);
+
     private:
         Shader(ID3D11Device *device, const char *vsPath, const char *psPath, Layout layout);
         ID3D11InputLayout *m_il;

@@ -2,10 +2,12 @@
 #include <vector>
 #include <stdio.h>
 #include <string.h>
+#include <float.h>
 #include "Engine/Utils/Files.h"
+#include "Engine/Core/Renderer.h"
 
 // Creates Model
-Model::Model(ID3D11Device *device, Mesh *mesh, Texture *texture, Shader *shader) {
+Model::Model(Mesh *mesh, Texture *texture, Shader *shader) {
 
     // Construction
     m_position = { 0.0f, 0.0f, 0.0f };
@@ -14,6 +16,7 @@ Model::Model(ID3D11Device *device, Mesh *mesh, Texture *texture, Shader *shader)
     m_mesh = mesh;
     m_texture = texture;
     m_shader = shader;
+    m_type = ObjectType::MODEL;
     
 }
 
@@ -24,5 +27,28 @@ Mat4 Model::transform() {
 
 // Returns AABB After Transformations
 AABB Model::getAABB() {
-    return m_mesh->m_aabb;
+    AABB aabb;
+    Vec3 minV = { FLT_MAX,   FLT_MAX,  FLT_MAX };
+    Vec3 maxV = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+    for (Vec3 triangle : m_mesh->m_triangles) {
+        Vec3 transformed = TransformPoint(triangle, transform());
+        if (transformed.x < minV.x) minV.x = transformed.x;
+        if (transformed.y < minV.y) minV.y = transformed.y;
+        if (transformed.z < minV.z) minV.z = transformed.z;
+        if (transformed.x > maxV.x) maxV.x = transformed.x;
+        if (transformed.y > maxV.y) maxV.y = transformed.y;
+        if (transformed.z > maxV.z) maxV.z = transformed.z;
+    }
+    aabb.min = minV;
+    aabb.max = maxV;
+    return aabb;
+}
+
+// Renders The Model
+void Model::render(Renderer *renderer) {
+    renderer->renderModel(this);
+}
+
+Model *Model::create(Mesh *mesh, Texture *texture, Shader *shader) {
+    return new Model(mesh, texture, shader);
 }
