@@ -135,11 +135,6 @@ void Renderer::endFrame() {
 
 }
 
-// Factory Method For Creating Sprite
-Sprite *Renderer::createSprite(Texture *texture, Shader *shader) {
-    return new Sprite(m_device, texture, shader);
-}
-
 // Renders Model Next Frame
 void Renderer::renderModel(Model *model) {
 

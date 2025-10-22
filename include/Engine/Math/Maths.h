@@ -49,6 +49,10 @@ inline Mat4 Identity() {
     return r;
 }
 
+inline float Length(const Vec3& v) {
+    return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
 inline Vec3 Normalize(const Vec3& v) {
     float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     return { v.x / len, v.y / len, v.z / len };

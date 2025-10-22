@@ -34,3 +34,11 @@ Sprite::Sprite(ID3D11Device *device, Texture *texture, Shader *shader) {
 Mat4 Sprite::transform() {
     return MakeSpriteTransform(m_position.x, m_position.y, m_size.x, m_size.y, Engine::window->m_width, Engine::window->m_height);
 }
+
+Sprite *Sprite::create(Texture *texture, Shader *shader) {
+    return new Sprite(Engine::renderer->m_device, texture, shader);
+}
+
+void Sprite::render(Renderer *renderer) {
+    renderer->renderSprite(this);
+}

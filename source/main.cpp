@@ -7,6 +7,7 @@ class DemoScene : public Scene {
     public:
         Player *player;
         Model *model;
+        Sprite *sprite;
 
         void onStart() override {
 
@@ -14,6 +15,7 @@ class DemoScene : public Scene {
             Mesh *mesh1 = Mesh::create("../assets/meshes/level.obj");
             Texture *texture1 = Texture::create("../assets/textures/checker.bmp");
             Shader *shader1 = Shader::create("../assets/shaders/3dvs.hlsl", "../assets/shaders/3dps.hlsl", Layout::MODEL);
+            Shader *shader2 = Shader::create("../assets/shaders/2dvs.hlsl", "../assets/shaders/2dps.hlsl", Layout::SPRITE);
 
             // Player Object
             player = new Player(Engine::camera);
@@ -22,14 +24,20 @@ class DemoScene : public Scene {
             // Ground Object
             model = Model::create(mesh1, texture1, shader1);
 
+            // Sprite
+            sprite = Sprite::create(texture1, shader2);
+
             // Adding Objects To Scene
             this->addObject(player);
             this->addObject(model);
+            this->addObject(sprite);
+
         }
 
         void onUpdate(float dt) override {
 
-            ImGui::Begin("Position");
+            ImGui::Begin("Debug");
+            ImGui::Text("Player Position:");
             ImGui::Text("X: %.0f", player->m_position.x);
             ImGui::Text("Y: %.0f", player->m_position.y);
             ImGui::Text("Z: %.0f", player->m_position.z);

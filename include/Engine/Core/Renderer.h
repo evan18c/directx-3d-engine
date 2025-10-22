@@ -27,16 +27,12 @@ class Renderer {
         ID3D11Buffer *m_transformBuffer3D;
         ID3D11Buffer *m_transformBuffer2D;
 
-        // Factory Creation Methods
-        Sprite *createSprite(Texture *texture, Shader *shader);
-
         // Methods
         Renderer(HWND hwnd, const int width, const int height);
         void beginFrame();
         void endFrame();
         void renderModel(Model *model);
         void renderSprite(Sprite *sprite);
-        void update();
 };
 
 // Buffers For Interacting With HLSL
