@@ -105,9 +105,10 @@ Mesh::Mesh(ID3D11Device *device, const char *objPath) {
         mp.vertexCount = val.size();
 
         // Creating Texture
-        std::string bmpPath = objDir + "/" + mf.m_materials[key]->map_Kd;
-        Texture texture = Texture(device, bmpPath.c_str());
-        mp.srv = texture.m_srv;
+        std::string imgPath = objDir + "/" + mf.m_materials[key]->map_Kd;
+        Texture *texture = Texture::create(imgPath.c_str());
+        mp.srv = texture->m_srv;
+        delete texture;
 
         // Buffer Description
         D3D11_BUFFER_DESC desc = {};

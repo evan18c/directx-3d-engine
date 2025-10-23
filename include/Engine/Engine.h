@@ -26,6 +26,9 @@
 // Game
 #include "Game/Player.h"
 
+// ImGui
+#include "imgui.h"
+
 // Static Engine Class
 class Engine {
     public:

@@ -11,6 +11,7 @@ add_compile_options(-w)
 # Include directories
 include_directories(
     include
+    include/Engine/External/stb
     include/Engine/External/imgui
     include/Engine/External/imgui/backends
 )
