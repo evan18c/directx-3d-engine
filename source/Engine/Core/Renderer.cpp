@@ -152,10 +152,6 @@ void Renderer::renderModel(Model *model) {
     m_context->VSSetShader(model->m_shader->m_vs, NULL, 0);
     m_context->PSSetShader(model->m_shader->m_ps, NULL, 0);
 
-    // Uploading Vertices + Textures + Lightning
-    m_context->IASetVertexBuffers(0, 1, &model->m_mesh->m_buffer, &stride, &offset);
-    m_context->PSSetShaderResources(0, 1, &model->m_texture->m_srv);
-
     // Uploading MVP Matrix
     TransformBuffer3D t;
     t.model = model->transform();
@@ -164,8 +160,12 @@ void Renderer::renderModel(Model *model) {
     m_context->UpdateSubresource(m_transformBuffer3D, 0, NULL, &t, 0, 0);
     m_context->VSSetConstantBuffers(0, 1, &m_transformBuffer3D);
 
-    // Drawing The Model
-    m_context->Draw(model->m_mesh->m_vertexCount, 0);
+    // Render MeshParts
+    for (MeshPart mp : model->m_mesh->m_parts) {
+        m_context->IASetVertexBuffers(0, 1, &mp.vertexBuffer, &stride, &offset);
+        m_context->PSSetShaderResources(0, 1, &mp.srv);
+        m_context->Draw(mp.vertexCount, 0);
+    }
 }
 
 // Renders Sprite Next Frame

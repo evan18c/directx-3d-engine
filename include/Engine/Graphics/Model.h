@@ -10,10 +10,9 @@
 class Model : public Object {
 
     public:
-        static Model *create(Mesh *mesh, Texture *texture, Shader *shader);
-        Model(Mesh *mesh, Texture *texture, Shader *shader);
+        Model(Mesh *mesh, Shader *shader);
+        static Model *create(Mesh *mesh, Shader *shader);
         Mesh *m_mesh;
-        Texture *m_texture;
         Shader *m_shader;
         Vec3 m_position;
         Vec3 m_rotation;

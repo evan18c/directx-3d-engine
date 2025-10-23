@@ -1,7 +1,9 @@
 #pragma once
 #include "Engine/Math/Maths.h"
+#include <map>
 #include <vector>
 #include <d3d11.h>
+#include <windef.h>
 
 // Vertex Structure
 struct Vertex {
@@ -10,17 +12,27 @@ struct Vertex {
     Vec3 normal;
 };
 
+// Faces Of The Mesh
+struct Face {
+    int vertices[3];
+    int uvs[3];
+    int normals[3];
+    char material[MAX_PATH];
+};
+
+// Parts Of Mesh With Unique Material
+struct MeshPart {
+    ID3D11ShaderResourceView *srv;
+    ID3D11Buffer *vertexBuffer;
+    int vertexCount;
+};
+
 // Contains All Object Data, Verterices + UVs + Normals
 class Mesh {
 
     public:
-        static Mesh *create(const char *objPath);
-        std::vector<Vec3> m_triangles;
-
-    private:
         Mesh(ID3D11Device *device, const char *objPath);
-        ID3D11Buffer *m_buffer;
-        int m_vertexCount;
-
-    friend class Renderer;
+        static Mesh *create(const char *objPath);
+        std::vector<MeshPart> m_parts;
+        std::vector<Vec3> m_triangles;
 };

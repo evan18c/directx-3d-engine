@@ -9,6 +9,7 @@
 
 // Graphics
 #include "Engine/Graphics/Camera.h"
+#include "Engine/Graphics/Material.h"
 #include "Engine/Graphics/Mesh.h"
 #include "Engine/Graphics/Model.h"
 #include "Engine/Graphics/Shader.h"

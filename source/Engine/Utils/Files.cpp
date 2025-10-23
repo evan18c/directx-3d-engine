@@ -25,8 +25,8 @@ const char *Files::ReadBMP(const char *file, int *dimensions) {
     memcpy(&width, contents + 0x12, 4);
     memcpy(&height, contents + 0x16, 4);
 
-    int srcBytesPerPixel = 3; // BMP stores as BGR24
-    int dstBytesPerPixel = 4; // We’ll output RGBA
+    int srcBytesPerPixel = 3;
+    int dstBytesPerPixel = 4;
     int imageSize = width * height * srcBytesPerPixel;
 
     char *src = (char *)(contents + 0x36);
@@ -34,10 +34,10 @@ const char *Files::ReadBMP(const char *file, int *dimensions) {
 
     // Convert from BGR → RGBA
     for (int i = 0, j = 0; i < imageSize; i += 3, j += 4) {
-        rgba[j + 0] = src[i + 2]; // R
-        rgba[j + 1] = src[i + 1]; // G
-        rgba[j + 2] = src[i + 0]; // B
-        rgba[j + 3] = 255;        // A (fully opaque)
+        rgba[j + 0] = src[i + 2];
+        rgba[j + 1] = src[i + 1];
+        rgba[j + 2] = src[i + 0];
+        rgba[j + 3] = 255;
     }
 
     dimensions[0] = width;

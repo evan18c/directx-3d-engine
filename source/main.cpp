@@ -12,8 +12,8 @@ class DemoScene : public Scene {
         void onStart() override {
 
             // Assets
-            Mesh *mesh1 = Mesh::create("../assets/meshes/level.obj");
-            Texture *texture1 = Texture::create("../assets/textures/checker.bmp");
+            Mesh *mesh1 = Mesh::create("../assets/objects/level/level.obj");
+            Texture *texture1 = Texture::create("../assets/objects/level/9.bmp");
             Shader *shader1 = Shader::create("../assets/shaders/3dvs.hlsl", "../assets/shaders/3dps.hlsl", Layout::MODEL);
             Shader *shader2 = Shader::create("../assets/shaders/2dvs.hlsl", "../assets/shaders/2dps.hlsl", Layout::SPRITE);
 
@@ -22,7 +22,7 @@ class DemoScene : public Scene {
             player->m_position.y = 10.0f;
 
             // Ground Object
-            model = Model::create(mesh1, texture1, shader1);
+            model = Model::create(mesh1, shader1);
 
             // Sprite
             sprite = Sprite::create(texture1, shader2);
@@ -57,6 +57,6 @@ int main() {
 /*
 TODO:
 -for horizontal movement (x/z axis), calculate step up required when they move into a wall.
--make sprites an object that can be rendered
+-^ for this give them some y velocity
 -add multi texture support for obj files
 */

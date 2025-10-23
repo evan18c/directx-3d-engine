@@ -7,14 +7,13 @@
 #include "Engine/Core/Renderer.h"
 
 // Creates Model
-Model::Model(Mesh *mesh, Texture *texture, Shader *shader) {
+Model::Model(Mesh *mesh, Shader *shader) {
 
     // Construction
     m_position = { 0.0f, 0.0f, 0.0f };
     m_rotation = { 0.0f, 0.0f, 0.0f };
     m_scale    = { 1.0f, 1.0f, 1.0f };
     m_mesh = mesh;
-    m_texture = texture;
     m_shader = shader;
     m_type = ObjectType::MODEL;
     
@@ -49,6 +48,6 @@ void Model::render(Renderer *renderer) {
     renderer->renderModel(this);
 }
 
-Model *Model::create(Mesh *mesh, Texture *texture, Shader *shader) {
-    return new Model(mesh, texture, shader);
+Model *Model::create(Mesh *mesh, Shader *shader) {
+    return new Model(mesh, shader);
 }
