@@ -102,8 +102,17 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
     m_device->CreateSamplerState(&sampDesc, &m_samplerState);
 
+    // -------------------- 10. Create Raster State -------------------- //
+    D3D11_RASTERIZER_DESC rasterDesc = {};
+    rasterDesc.FillMode = D3D11_FILL_SOLID;
+    rasterDesc.CullMode = D3D11_CULL_NONE;
+    rasterDesc.FrontCounterClockwise = FALSE;
+    rasterDesc.DepthClipEnable = TRUE;
+    m_device->CreateRasterizerState(&rasterDesc, &m_rasterState);
+    m_context->RSSetState(m_rasterState);
 
-    // -------------------- 10. ImGui Init -------------------- //
+
+    // -------------------- 11. ImGui Init -------------------- //
     ImGui_ImplDX11_Init(m_device, m_context);
 
 }
@@ -156,7 +165,7 @@ void Renderer::renderModel(Model *model) {
     TransformBuffer3D t;
     t.model = model->transform();
     t.view = LookAt(Engine::camera->m_position, Engine::camera->m_look, {0.0f, 1.0f, 0.0f});
-    t.projection = Projection(70.0f, 1280.0f / 720.0f, 0.1f, 100.0f);
+    t.projection = Projection(70.0f, (float)Engine::window->m_width / (float)Engine::window->m_height, 0.1f, 1000.0f);
     m_context->UpdateSubresource(m_transformBuffer3D, 0, NULL, &t, 0, 0);
     m_context->VSSetConstantBuffers(0, 1, &m_transformBuffer3D);
 

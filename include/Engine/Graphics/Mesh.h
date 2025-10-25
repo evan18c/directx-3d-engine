@@ -27,12 +27,20 @@ struct MeshPart {
     int vertexCount;
 };
 
+// TriangleChunk for faster physics
+struct TriangleChunk {
+    std::vector<Vec3> triangles;
+    AABB aabb;
+};
+
 // Contains All Object Data, Verterices + UVs + Normals
 class Mesh {
 
     public:
         Mesh(ID3D11Device *device, const char *objPath);
         static Mesh *create(const char *objPath);
+        std::vector<TriangleChunk> m_chunks;
         std::vector<MeshPart> m_parts;
         std::vector<Vec3> m_triangles;
+        AABB m_aabb;
 };

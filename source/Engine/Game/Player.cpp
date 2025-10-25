@@ -1,8 +1,4 @@
-#include "Game/Player.h"
-#include "Engine/Core/Window.h"
-#include "Engine/Core/Renderer.h"
-#include "Engine/Core/Scene.h"
-#include "Engine/Graphics/Model.h"
+#include "Engine/Engine.h"
 #include <stdio.h>
 
 Player::Player(Camera *camera) {
@@ -49,55 +45,94 @@ void Player::update(float dt) {
     // Applying X Velocity
     m_position.x += m_velocity.x * dt;
     for (Object *object : m_scene->m_objects) {
+
+        // Model Check
         if (object->m_type != ObjectType::MODEL) continue;
         Model *model = static_cast<Model*>(object);
+
+        // AABB Check
         if (!getAABB().Intersects(model->getAABB())) continue;
-        for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
-            Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
-            Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
-            Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
-            if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
-                m_position.y += abs(m_velocity.x * dt);
-                break;
+
+        // Checking Each Triangle Chunk
+        for (TriangleChunk chunk : model->m_mesh->m_chunks) {
+            
+            // Check if in triangle chunk
+            if (!getAABB().Intersects(TransformAABB(chunk.aabb, model->transform()))) continue;
+
+            // Normal Collision:
+            for (int i=0; i<chunk.triangles.size(); i += 3) {
+                Vec3 v0 = TransformPoint(chunk.triangles[i],   model->transform());
+                Vec3 v1 = TransformPoint(chunk.triangles[i+1], model->transform());
+                Vec3 v2 = TransformPoint(chunk.triangles[i+2], model->transform());
+                if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
+                    m_position.x -= m_velocity.x * dt; // undo velocity
+                }
             }
+
         }
     }
 
     // Applying Y Velocity
     m_position.y += m_velocity.y * dt;
     for (Object *object : m_scene->m_objects) {
+
+        // Model Check
         if (object->m_type != ObjectType::MODEL) continue;
         Model *model = static_cast<Model*>(object);
+
+        // AABB Check
         if (!getAABB().Intersects(model->getAABB())) continue;
-        for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
-            Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
-            Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
-            Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
-            if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
-                m_position.y -= m_velocity.y * dt;
-                if (m_velocity.y < 0.0f) {
-                    m_velocity.y = 0.0f;
-                    m_grounded = true;
+
+        // Checking Each Triangle Chunk
+        for (TriangleChunk chunk : model->m_mesh->m_chunks) {
+            
+            // Check if in triangle chunk
+            if (!getAABB().Intersects(TransformAABB(chunk.aabb, model->transform()))) continue;
+
+            // Normal Collision:
+            for (int i=0; i<chunk.triangles.size(); i += 3) {
+                Vec3 v0 = TransformPoint(chunk.triangles[i],   model->transform());
+                Vec3 v1 = TransformPoint(chunk.triangles[i+1], model->transform());
+                Vec3 v2 = TransformPoint(chunk.triangles[i+2], model->transform());
+                if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
+                    m_position.y -= m_velocity.y * dt;
+                    if (m_velocity.y < 0.0f) {
+                        m_velocity.y = 0.0f;
+                        m_grounded = true;
+                    }
                 }
-                break;
             }
+
         }
     }
 
     // Applying Z Velocity
     m_position.z += m_velocity.z * dt;
     for (Object *object : m_scene->m_objects) {
+
+        // Model Check
         if (object->m_type != ObjectType::MODEL) continue;
         Model *model = static_cast<Model*>(object);
+
+        // AABB Check
         if (!getAABB().Intersects(model->getAABB())) continue;
-        for (int i=0; i<model->m_mesh->m_triangles.size(); i += 3) {
-            Vec3 v0 = TransformPoint(model->m_mesh->m_triangles.at(i), model->transform());
-            Vec3 v1 = TransformPoint(model->m_mesh->m_triangles.at(i + 1), model->transform());
-            Vec3 v2 = TransformPoint(model->m_mesh->m_triangles.at(i + 2), model->transform());
-            if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
-                m_position.y += abs(m_velocity.z * dt);
-                break;
+
+        // Checking Each Triangle Chunk
+        for (TriangleChunk chunk : model->m_mesh->m_chunks) {
+            
+            // Check if in triangle chunk
+            if (!getAABB().Intersects(TransformAABB(chunk.aabb, model->transform()))) continue;
+
+            // Normal Collision:
+            for (int i=0; i<chunk.triangles.size(); i += 3) {
+                Vec3 v0 = TransformPoint(chunk.triangles[i],   model->transform());
+                Vec3 v1 = TransformPoint(chunk.triangles[i+1], model->transform());
+                Vec3 v2 = TransformPoint(chunk.triangles[i+2], model->transform());
+                if (AABBvsTriangle(getAABB(), v0, v1, v2)) {
+                    m_position.z -= m_velocity.z * dt; // undo velocity
+                }
             }
+
         }
     }
 

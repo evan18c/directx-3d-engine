@@ -88,6 +88,36 @@ Mesh::Mesh(ID3D11Device *device, const char *objPath) {
         }
     }
 
+    // Dividing m_triangles into chunks for faster physics calculations
+    const int TRIANGLES_PER_CHUNK = 50;
+    for (int i=0; i<m_triangles.size(); i+=TRIANGLES_PER_CHUNK*3) {
+
+        // Create new chunk
+        TriangleChunk chunk;
+
+        // Copy Triangles
+        for (int j=i; j<i+TRIANGLES_PER_CHUNK*3 && j<m_triangles.size(); j++) {
+            chunk.triangles.push_back(m_triangles[j]);
+        }
+
+        // Calculate AABB
+        Vec3 minV = { FLT_MAX,   FLT_MAX,  FLT_MAX };
+        Vec3 maxV = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+        for (Vec3 triangle : chunk.triangles) {
+            if (triangle.x < minV.x) minV.x = triangle.x;
+            if (triangle.y < minV.y) minV.y = triangle.y;
+            if (triangle.z < minV.z) minV.z = triangle.z;
+            if (triangle.x > maxV.x) maxV.x = triangle.x;
+            if (triangle.y > maxV.y) maxV.y = triangle.y;
+            if (triangle.z > maxV.z) maxV.z = triangle.z;
+        }
+        chunk.aabb.min = minV;
+        chunk.aabb.max = maxV;
+
+        // Add to chunk list
+        m_chunks.push_back(chunk);
+    }
+
     // Directory Of Object File
     std::string objDir = std::filesystem::path(objPath).parent_path().string();
 
@@ -126,6 +156,20 @@ Mesh::Mesh(ID3D11Device *device, const char *objPath) {
         // Update m_parts Vector
         m_parts.push_back(mp);
     }
+
+    // Calculating AABB
+    Vec3 minV = { FLT_MAX,   FLT_MAX,  FLT_MAX };
+    Vec3 maxV = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+    for (Vec3 triangle : m_triangles) {
+        if (triangle.x < minV.x) minV.x = triangle.x;
+        if (triangle.y < minV.y) minV.y = triangle.y;
+        if (triangle.z < minV.z) minV.z = triangle.z;
+        if (triangle.x > maxV.x) maxV.x = triangle.x;
+        if (triangle.y > maxV.y) maxV.y = triangle.y;
+        if (triangle.z > maxV.z) maxV.z = triangle.z;
+    }
+    m_aabb.min = minV;
+    m_aabb.max = maxV;
 
 }
 

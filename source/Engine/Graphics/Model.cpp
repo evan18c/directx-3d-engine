@@ -21,26 +21,12 @@ Model::Model(Mesh *mesh, Shader *shader) {
 
 // Returns Transform Matrix (M in MVP)
 Mat4 Model::transform() {
-    return Multiply(Multiply(Scale(m_scale), Rotate(m_rotation)), Translate(m_position));
+    return Multiply(Translate(m_position), Multiply(Rotate(m_rotation), Scale(m_scale)));
 }
 
 // Returns AABB After Transformations
 AABB Model::getAABB() {
-    AABB aabb;
-    Vec3 minV = { FLT_MAX,   FLT_MAX,  FLT_MAX };
-    Vec3 maxV = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
-    for (Vec3 triangle : m_mesh->m_triangles) {
-        Vec3 transformed = TransformPoint(triangle, transform());
-        if (transformed.x < minV.x) minV.x = transformed.x;
-        if (transformed.y < minV.y) minV.y = transformed.y;
-        if (transformed.z < minV.z) minV.z = transformed.z;
-        if (transformed.x > maxV.x) maxV.x = transformed.x;
-        if (transformed.y > maxV.y) maxV.y = transformed.y;
-        if (transformed.z > maxV.z) maxV.z = transformed.z;
-    }
-    aabb.min = minV;
-    aabb.max = maxV;
-    return aabb;
+    return TransformAABB(m_mesh->m_aabb, transform());
 }
 
 // Renders The Model

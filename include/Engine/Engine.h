@@ -7,6 +7,9 @@
 #include "Engine/Core/Scene.h"
 #include "Engine/Core/Window.h"
 
+// Game
+#include "Engine/Game/Player.h"
+
 // Graphics
 #include "Engine/Graphics/Camera.h"
 #include "Engine/Graphics/Material.h"
@@ -22,9 +25,6 @@
 // Utils
 #include "Engine/Utils/Clock.h"
 #include "Engine/Utils/Files.h"
-
-// Game
-#include "Game/Player.h"
 
 // ImGui
 #include "imgui.h"

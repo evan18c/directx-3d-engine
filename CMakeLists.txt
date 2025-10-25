@@ -21,10 +21,10 @@ file(GLOB_RECURSE SOURCES
     "source/*.cpp"
     "source/Engine/Engine.cpp"
     "source/Engine/Core/*.cpp"
+    "source/Engine/Game/*.cpp"
+    "source/Engine/External/imgui/*.cpp"
     "source/Engine/Graphics/*.cpp"
     "source/Engine/Utils/*.cpp"
-    "source/Engine/External/imgui/*.cpp"
-    "source/Game/*.cpp"
 )
 
 # Create the executable

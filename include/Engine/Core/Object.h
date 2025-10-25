@@ -7,7 +7,8 @@ enum class ObjectType {
     PLAYER,
     MODEL,
     SPRITE,
-    LIGHT
+    LIGHT,
+    ENTITY
 };
 
 // Base class for all objects in a scene.

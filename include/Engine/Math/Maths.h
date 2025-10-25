@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <float.h>
 #include <math.h>
 
 const float PI = 3.1415926535;
@@ -269,4 +270,33 @@ inline Mat4 MakeSpriteTransform(float x, float y, float sx, float sy, float scre
     translate.m[3][2] = 0.0f;
 
     return Multiply(scale, translate);
+}
+
+inline AABB TransformAABB(const AABB& localAABB, const Mat4& transform) {
+    // Extract all 8 corners of the local AABB
+    Vec3 corners[8];
+    corners[0] = { localAABB.min.x, localAABB.min.y, localAABB.min.z };
+    corners[1] = { localAABB.max.x, localAABB.min.y, localAABB.min.z };
+    corners[2] = { localAABB.min.x, localAABB.max.y, localAABB.min.z };
+    corners[3] = { localAABB.min.x, localAABB.min.y, localAABB.max.z };
+    corners[4] = { localAABB.max.x, localAABB.max.y, localAABB.min.z };
+    corners[5] = { localAABB.max.x, localAABB.min.y, localAABB.max.z };
+    corners[6] = { localAABB.min.x, localAABB.max.y, localAABB.max.z };
+    corners[7] = { localAABB.max.x, localAABB.max.y, localAABB.max.z };
+
+    // Transform them
+    Vec3 minV = { FLT_MAX, FLT_MAX, FLT_MAX };
+    Vec3 maxV = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+    for (int i = 0; i < 8; i++) {
+        Vec3 worldPos = TransformPoint(corners[i], transform);
+        minV.x = std::min(minV.x, worldPos.x);
+        minV.y = std::min(minV.y, worldPos.y);
+        minV.z = std::min(minV.z, worldPos.z);
+        maxV.x = std::max(maxV.x, worldPos.x);
+        maxV.y = std::max(maxV.y, worldPos.y);
+        maxV.z = std::max(maxV.z, worldPos.z);
+    }
+
+    return { minV, maxV };
 }
