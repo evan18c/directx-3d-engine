@@ -7,8 +7,8 @@ class DemoScene : public Scene {
     public:
         Player *player;
         Model *ground;
-        Model *halo;
-        Sprite *sprite;
+        Sprite *crosshair;
+        Light *light1;
 
         void onStart() override {
 
@@ -27,15 +27,19 @@ class DemoScene : public Scene {
             // Ground Object
             ground = Model::create(mesh1, shader1);
 
+            // Lights
+            light1 = new Light({0.0f, 5.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, 1.0f, 10.0f);
+
             // Crosshair
-            sprite = Sprite::create(texture1, shader2);
-            sprite->m_size.x = 32;
-            sprite->m_size.y = 32;
+            crosshair = Sprite::create(texture1, shader2);
+            crosshair->m_size.x = 32;
+            crosshair->m_size.y = 32;
 
             // Adding Objects To Scene
             this->addObject(player);
             this->addObject(ground);
-            this->addObject(sprite);
+            this->addObject(light1);
+            this->addObject(crosshair);
 
         }
 

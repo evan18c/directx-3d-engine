@@ -170,17 +170,21 @@ void Renderer::renderModel(Model *model) {
     sb.projection = Projection(70.0f, (float)Engine::window->m_width / (float)Engine::window->m_height, 0.1f, 1000.0f);
 
     // Lighting
-    sb.lightCount = 2;
-
-    sb.lights[0].position = {0.0f, 10.0f, 0.0f};
-    sb.lights[0].color = {1.0f, 1.0f, 1.0f};
-    sb.lights[0].params.x = 3.0f;
-    sb.lights[0].params.y = 25.0f;
-
-    sb.lights[1].position = {25.0f, 10.0f, 25.0f};
-    sb.lights[1].color = {0.0f, 0.0f, 1.0f};
-    sb.lights[1].params.x = 3.0f;
-    sb.lights[1].params.y = 25.0f;
+    sb.lightCount = 0;
+    for (Object *obj : model->m_scene->m_objects) {
+        if (obj->m_type == ObjectType::LIGHT) {
+            Light *light = static_cast<Light *>(obj);
+            sb.lights[sb.lightCount].position.x = light->m_position.x;
+            sb.lights[sb.lightCount].position.y = light->m_position.y;
+            sb.lights[sb.lightCount].position.z = light->m_position.z;
+            sb.lights[sb.lightCount].color.x = light->m_color.x;
+            sb.lights[sb.lightCount].color.y = light->m_color.y;
+            sb.lights[sb.lightCount].color.z = light->m_color.z;
+            sb.lights[sb.lightCount].params.x = light->m_intensity;
+            sb.lights[sb.lightCount].params.y = light->m_radius;
+            sb.lightCount++;
+        }
+    }
 
     // Updating + Uploading SceneBuffer
     m_context->UpdateSubresource(m_sceneBuffer, 0, NULL, &sb, 0, 0);
