@@ -25,7 +25,7 @@ class Renderer {
         ID3D11BlendState *m_blendState;
         ID3D11SamplerState *m_samplerState;
         ID3D11RasterizerState *m_rasterState;
-        ID3D11Buffer *m_transformBuffer3D;
+        ID3D11Buffer *m_sceneBuffer;
         ID3D11Buffer *m_transformBuffer2D;
 
         // Methods
@@ -36,13 +36,25 @@ class Renderer {
         void renderSprite(Sprite *sprite);
 };
 
-// Buffers For Interacting With HLSL
-struct TransformBuffer3D
+// Lights In A Scene
+struct LightData {
+    Vec4 position;
+    Vec4 color;
+    Vec4 params; // x = intensity, y = radius
+};
+
+// Scene Buffer, contains MVP and Lights
+struct SceneBuffer
 {
     Mat4 model;
     Mat4 view;
     Mat4 projection;
+    int lightCount;
+    float pad[3];
+    LightData lights[32];
 };
+
+// 2D Scene Buffer
 struct TransformBuffer2D
 {
     Mat4 transform;

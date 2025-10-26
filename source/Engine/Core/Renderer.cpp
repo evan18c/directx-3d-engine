@@ -75,13 +75,13 @@ Renderer::Renderer(HWND hwnd, const int width, const int height) {
     m_device->CreateBlendState(&blendDesc, &m_blendState);
     m_context->OMSetBlendState(m_blendState, NULL, 0xffffffff);
 
-    // -------------------- 7. Create Transform Buffer 3D -------------------- //
+    // -------------------- 7. Create SceneBuffer -------------------- //
     D3D11_BUFFER_DESC transformBufferDesc = {};
     transformBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    transformBufferDesc.ByteWidth = sizeof(TransformBuffer3D);
+    transformBufferDesc.ByteWidth = sizeof(SceneBuffer);
     transformBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     transformBufferDesc.CPUAccessFlags = 0;
-    m_device->CreateBuffer(&transformBufferDesc, NULL, &m_transformBuffer3D);
+    m_device->CreateBuffer(&transformBufferDesc, NULL, &m_sceneBuffer);
 
     // -------------------- 8. Create Transform Buffer 2D -------------------- //
     D3D11_BUFFER_DESC transformBufferDesc2 = {};
@@ -161,13 +161,31 @@ void Renderer::renderModel(Model *model) {
     m_context->VSSetShader(model->m_shader->m_vs, NULL, 0);
     m_context->PSSetShader(model->m_shader->m_ps, NULL, 0);
 
-    // Uploading MVP Matrix
-    TransformBuffer3D t;
-    t.model = model->transform();
-    t.view = LookAt(Engine::camera->m_position, Engine::camera->m_look, {0.0f, 1.0f, 0.0f});
-    t.projection = Projection(70.0f, (float)Engine::window->m_width / (float)Engine::window->m_height, 0.1f, 1000.0f);
-    m_context->UpdateSubresource(m_transformBuffer3D, 0, NULL, &t, 0, 0);
-    m_context->VSSetConstantBuffers(0, 1, &m_transformBuffer3D);
+    // Creating Scene Buffer
+    SceneBuffer sb;
+
+    // Updating MVP Matrix
+    sb.model = model->transform();
+    sb.view = LookAt(Engine::camera->m_position, Engine::camera->m_look, {0.0f, 1.0f, 0.0f});
+    sb.projection = Projection(70.0f, (float)Engine::window->m_width / (float)Engine::window->m_height, 0.1f, 1000.0f);
+
+    // Lighting
+    sb.lightCount = 2;
+
+    sb.lights[0].position = {0.0f, 10.0f, 0.0f};
+    sb.lights[0].color = {1.0f, 1.0f, 1.0f};
+    sb.lights[0].params.x = 3.0f;
+    sb.lights[0].params.y = 25.0f;
+
+    sb.lights[1].position = {25.0f, 10.0f, 25.0f};
+    sb.lights[1].color = {0.0f, 0.0f, 1.0f};
+    sb.lights[1].params.x = 3.0f;
+    sb.lights[1].params.y = 25.0f;
+
+    // Updating + Uploading SceneBuffer
+    m_context->UpdateSubresource(m_sceneBuffer, 0, NULL, &sb, 0, 0);
+    m_context->VSSetConstantBuffers(0, 1, &m_sceneBuffer);
+    m_context->PSSetConstantBuffers(0, 1, &m_sceneBuffer);
 
     // Render MeshParts
     for (MeshPart mp : model->m_mesh->m_parts) {

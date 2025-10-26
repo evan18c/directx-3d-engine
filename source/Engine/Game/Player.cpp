@@ -5,7 +5,7 @@ Player::Player(Camera *camera) {
     m_position = { 0.0f, 0.0f, 0.0f };
     m_velocity = { 0.0f, 0.0f, 0.0f };
     m_gravity = 9.8f;
-    m_speed = 5.0f;
+    m_speed = 10.0f;
     m_jump = 5.0f;
     m_grounded = false;
     m_camera = camera;

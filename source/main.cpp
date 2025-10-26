@@ -14,22 +14,18 @@ class DemoScene : public Scene {
 
             // Assets
             Mesh *mesh1 = Mesh::create("../assets/objects/ground/ground.obj");
-            Mesh *mesh2 = Mesh::create("../assets/objects/poa/halo_1campaignmission_1_pillar_of_autumn.obj");
             Shader *shader1 = Shader::create("../assets/shaders/3dvs.hlsl", "../assets/shaders/3dps.hlsl", Layout::MODEL);
             Shader *shader2 = Shader::create("../assets/shaders/2dvs.hlsl", "../assets/shaders/2dps.hlsl", Layout::SPRITE);
             Texture *texture1 = Texture::create("../assets/textures/crosshair.png");
 
             // Player Object
             player = new Player(Engine::camera);
-            player->m_position.x = -20.0f;
-            player->m_position.y = 42.0f;
+            player->m_position.x = 0.0f;
+            player->m_position.y = 5.0f;
             player->m_position.z = 0.0f;
 
             // Ground Object
             ground = Model::create(mesh1, shader1);
-
-            // Halo Object
-            halo = Model::create(mesh2, shader1);
 
             // Crosshair
             sprite = Sprite::create(texture1, shader2);
@@ -39,7 +35,6 @@ class DemoScene : public Scene {
             // Adding Objects To Scene
             this->addObject(player);
             this->addObject(ground);
-            this->addObject(halo);
             this->addObject(sprite);
 
         }
