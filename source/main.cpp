@@ -14,8 +14,8 @@ class DemoScene : public Scene {
 
             // Assets
             Mesh *mesh1 = Mesh::create("../assets/objects/ground/ground.obj");
-            Shader *shader1 = Shader::create("../assets/shaders/3dvs.hlsl", "../assets/shaders/3dps.hlsl", Layout::MODEL);
-            Shader *shader2 = Shader::create("../assets/shaders/2dvs.hlsl", "../assets/shaders/2dps.hlsl", Layout::SPRITE);
+            Shader *shader1 = Shader::default3D();
+            Shader *shader2 = Shader::default2D();
             Texture *texture1 = Texture::create("../assets/textures/crosshair.png");
 
             // Player Object
@@ -61,10 +61,7 @@ int main() {
 
 /*
 TODO:
--add rendering for triangles both sides
 -for horizontal movement (x/z axis), calculate step up required when they move into a wall.
--break up m_triangles into chunks and check collision only if ur in the aabb of it
--maybe try messing with shaders for cool lighting
 
 https://imagetostl.com/convert/file/glb/to/obj#convert
 https://sketchfab.com/jameslucino117/collections/halo-1-campaign-37211b4caa104c6ca6365f7229df5267
