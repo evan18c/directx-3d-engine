@@ -21,9 +21,10 @@ file(GLOB_RECURSE SOURCES
     "source/*.cpp"
     "source/Engine/Engine.cpp"
     "source/Engine/Core/*.cpp"
-    "source/Engine/Game/*.cpp"
     "source/Engine/External/imgui/*.cpp"
+    "source/Engine/Game/*.cpp"
     "source/Engine/Graphics/*.cpp"
+    "source/Engine/Objects/*.cpp"
     "source/Engine/Utils/*.cpp"
 )
 

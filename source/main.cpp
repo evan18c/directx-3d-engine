@@ -9,23 +9,26 @@ class DemoScene : public Scene {
         Model *ground;
         Sprite *crosshair;
         Light *light1;
+        Model *smg;
 
         void onStart() override {
 
             // Assets
             Mesh *mesh1 = Mesh::create("../assets/objects/ground/ground.obj");
+            Mesh *mesh2 = Mesh::create("../assets/objects/halo/smg/halo_3_smg_restoration.obj");
             Shader *shader1 = Shader::default3D();
             Shader *shader2 = Shader::default2D();
             Texture *texture1 = Texture::create("../assets/textures/crosshair.png");
 
             // Player Object
             player = new Player(Engine::camera);
-            player->m_position.x = 0.0f;
+            player->m_position.x = 0.9f;
             player->m_position.y = 5.0f;
             player->m_position.z = 0.0f;
 
             // Ground Object
             ground = Model::create(mesh1, shader1);
+            ground->m_position.y = -2.0f;
 
             // Lights
             light1 = new Light({0.0f, 5.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, 1.0f, 10.0f);
@@ -35,9 +38,13 @@ class DemoScene : public Scene {
             crosshair->m_size.x = 32;
             crosshair->m_size.y = 32;
 
+            // Halo SMG
+            smg = Model::create(mesh2, shader1);
+
             // Adding Objects To Scene
             this->addObject(player);
             this->addObject(ground);
+            this->addObject(smg);
             this->addObject(light1);
             this->addObject(crosshair);
 
@@ -51,6 +58,8 @@ class DemoScene : public Scene {
             ImGui::Text("Y: %.0f", player->m_position.y);
             ImGui::Text("Z: %.0f", player->m_position.z);
             ImGui::End();
+
+            light1->m_position = player->m_position;
 
         }
 };

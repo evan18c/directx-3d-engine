@@ -12,16 +12,18 @@
 
 // Graphics
 #include "Engine/Graphics/Camera.h"
-#include "Engine/Graphics/Light.h"
 #include "Engine/Graphics/Material.h"
 #include "Engine/Graphics/Mesh.h"
-#include "Engine/Graphics/Model.h"
 #include "Engine/Graphics/Shader.h"
-#include "Engine/Graphics/Sprite.h"
 #include "Engine/Graphics/Texture.h"
 
 // Math
 #include "Engine/Math/Maths.h"
+
+// Objects
+#include "Engine/Objects/Light.h"
+#include "Engine/Objects/Model.h"
+#include "Engine/Objects/Sprite.h"
 
 // Utils
 #include "Engine/Utils/Clock.h"

@@ -1,14 +1,13 @@
 #pragma once
 #include <vector>
-#include <functional>
 #include <windows.h>
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include "Engine/Utils/Files.h"
 #include "Engine/Graphics/Mesh.h"
-#include "Engine/Graphics/Model.h"
 #include "Engine/Graphics/Camera.h"
-#include "Engine/Graphics/Sprite.h"
+#include "Engine/Objects/Model.h"
+#include "Engine/Objects/Sprite.h"
 #include "Engine/Math/Maths.h"
 
 // Contains Code For Interacting With DirectX

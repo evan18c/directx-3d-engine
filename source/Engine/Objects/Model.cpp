@@ -1,10 +1,8 @@
-#include "Engine/Graphics/Model.h"
+#include "Engine/Engine.h"
 #include <vector>
 #include <stdio.h>
 #include <string.h>
 #include <float.h>
-#include "Engine/Utils/Files.h"
-#include "Engine/Core/Renderer.h"
 
 // Creates Model
 Model::Model(Mesh *mesh, Shader *shader) {
